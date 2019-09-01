@@ -2,6 +2,8 @@ package com.waziro.sell.service.impl;
 
 import com.waziro.sell.dataobject.OrderDetail;
 import com.waziro.sell.dto.OrderDTO;
+import com.waziro.sell.enums.OrderStatusEnum;
+import com.waziro.sell.enums.PayStatusEnum;
 import com.waziro.sell.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.criterion.Order;
@@ -27,7 +29,7 @@ public class OrderServiceImplTest {
     @Autowired
     private OrderServiceImpl orderService;
     private final String BUYER_OPENID = "666";
-    private final String ORDER_ID = "156708746696422375";
+    private final String ORDER_ID = "156708722239784952";
 
     @Test
     public void create() {
@@ -66,18 +68,28 @@ public class OrderServiceImplTest {
     public void findList() {
         PageRequest request = new PageRequest(0,2);
         Page<OrderDTO> orderDTOPage = orderService.findList(BUYER_OPENID,request);
+        log.info("【订单列表】result={}",orderDTOPage.getContent());
         Assert.assertNotEquals(0,orderDTOPage.getTotalElements());
     }
 
     @Test
     public void cancel() {
+        OrderDTO orderDTO = orderService.findOne(ORDER_ID);
+        OrderDTO result = orderService.cancel(orderDTO);
+        Assert.assertEquals(OrderStatusEnum.CANCEL.getCode(),result.getOrderStatus());
     }
 
     @Test
     public void finish() {
+        OrderDTO orderDTO = orderService.findOne(ORDER_ID);
+        OrderDTO result = orderService.finish(orderDTO);
+        Assert.assertEquals(OrderStatusEnum.FINISHED.getCode(),result.getOrderStatus());
     }
 
     @Test
     public void paid() {
+        OrderDTO orderDTO = orderService.findOne(ORDER_ID);
+        OrderDTO result = orderService.paid(orderDTO);
+        Assert.assertEquals(PayStatusEnum.SUCCESS.getCode(),result.getPayStatus());
     }
 }
